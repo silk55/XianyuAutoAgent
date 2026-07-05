@@ -137,17 +137,17 @@ class XianyuApis:
             time.sleep(0.5)
             return self.hasLogin(retry_count + 1)
 
-    def get_token(self, device_id, retry_count=0):
+    def get_token(self, device_id, retry_count=0, relogin_attempted=False):
         if retry_count >= 2:  # 最多重试3次
-            logger.warning("获取token失败，尝试重新登陆")
-            # 尝试通过hasLogin重新登录
-            if self.hasLogin():
-                logger.info("重新登录成功，重新尝试获取token")
-                return self.get_token(device_id, 0)  # 重置重试次数
-            else:
-                logger.error("重新登录失败，Cookie已失效")
-                logger.error("🔴 程序即将退出，请更新.env文件中的COOKIES_STR后重新启动")
-                sys.exit(1)  # 直接退出程序
+            # 重新登录只尝试一次，避免hasLogin成功但token持续失败时无限循环
+            if not relogin_attempted:
+                logger.warning("获取token失败，尝试重新登陆")
+                if self.hasLogin():
+                    logger.info("重新登录成功，重新尝试获取token")
+                    return self.get_token(device_id, 0, relogin_attempted=True)
+            logger.error("重新登录失败或登录后仍无法获取token，Cookie已失效")
+            logger.error("🔴 程序即将退出，请更新.env文件中的COOKIES_STR后重新启动")
+            sys.exit(1)  # 直接退出程序
 
         params = {
             'jsv': '2.7.2',
@@ -204,10 +204,18 @@ class XianyuApis:
                     if 'RGV587_ERROR' in error_msg or '被挤爆啦' in error_msg:
                         logger.error(f"❌ 触发风控: {ret_value}")
                         logger.error("🔴 系统目前无法自动解决，请进入闲鱼网页版-点击消息-过滑块-复制最新的Cookie")
-                        
+
+                        # 无交互终端（如Docker后台运行）时无法手动输入，直接退出
+                        if not sys.stdin.isatty():
+                            logger.error("🔴 当前无交互终端，请更新.env中的COOKIES_STR后重启程序")
+                            sys.exit(1)
+
                         # 获取用户输入的新Cookie
                         print("\n" + "="*50)
-                        new_cookie_str = input("请输入新的Cookie字符串 (复制浏览器中的完整cookie，直接回车则退出程序): ").strip()
+                        try:
+                            new_cookie_str = input("请输入新的Cookie字符串 (复制浏览器中的完整cookie，直接回车则退出程序): ").strip()
+                        except EOFError:
+                            new_cookie_str = ''
                         print("="*50 + "\n")
                         
                         if new_cookie_str:
@@ -241,18 +249,18 @@ class XianyuApis:
                         logger.debug("检测到Set-Cookie，更新cookie")  # 降级为DEBUG并简化
                         self.clear_duplicate_cookies()
                     time.sleep(0.5)
-                    return self.get_token(device_id, retry_count + 1)
+                    return self.get_token(device_id, retry_count + 1, relogin_attempted)
                 else:
                     logger.info("Token获取成功")
                     return res_json
             else:
                 logger.error(f"Token API返回格式异常: {res_json}")
-                return self.get_token(device_id, retry_count + 1)
-                
+                return self.get_token(device_id, retry_count + 1, relogin_attempted)
+
         except Exception as e:
             logger.error(f"Token API请求异常: {str(e)}")
             time.sleep(0.5)
-            return self.get_token(device_id, retry_count + 1)
+            return self.get_token(device_id, retry_count + 1, relogin_attempted)
 
     def get_item_info(self, item_id, retry_count=0):
         """获取商品信息，自动处理token失效的情况"""

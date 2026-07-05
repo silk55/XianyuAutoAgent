@@ -72,8 +72,12 @@ class XianyuReplyBot:
         user_assistant_msgs = [msg for msg in context if msg['role'] in ['user', 'assistant']]
         return "\n".join([f"{msg['role']}: {msg['content']}" for msg in user_assistant_msgs])
 
-    def generate_reply(self, user_msg: str, item_desc: str, context: List[Dict]) -> str:
-        """生成回复主流程"""
+    def generate_reply(self, user_msg: str, item_desc: str, context: List[Dict]) -> tuple:
+        """生成回复主流程，返回 (回复内容, 意图)。
+
+        意图通过返回值传递而非只存在self.last_intent上，
+        避免多条消息并发处理时读到别的会话的意图。
+        """
         # 记录用户消息
         # logger.debug(f'用户所发消息: {user_msg}')
         
@@ -93,27 +97,28 @@ class XianyuReplyBot:
             # 无需回复的情况
             logger.info(f'意图识别完成: no_reply - 无需回复')
             self.last_intent = 'no_reply'
-            return "-"  # 返回特殊标记，表示无需回复
+            return "-", 'no_reply'  # 返回特殊标记，表示无需回复
         elif detected_intent in self.agents and detected_intent not in internal_intents:
             agent = self.agents[detected_intent]
-            logger.info(f'意图识别完成: {detected_intent}')
-            self.last_intent = detected_intent  # 保存当前意图
+            intent = detected_intent
         else:
             agent = self.agents['default']
-            logger.info(f'意图识别完成: default')
-            self.last_intent = 'default'  # 保存当前意图
-        
+            intent = 'default'
+        logger.info(f'意图识别完成: {intent}')
+        self.last_intent = intent  # 保存当前意图（并发场景请使用返回值）
+
         # 3. 获取议价次数
         bargain_count = self._extract_bargain_count(context)
         logger.info(f'议价次数: {bargain_count}')
 
         # 4. 生成回复
-        return agent.generate(
+        reply = agent.generate(
             user_msg=user_msg,
             item_desc=item_desc,
             context=formatted_context,
             bargain_count=bargain_count
         )
+        return reply, intent
     
     def _extract_bargain_count(self, context: List[Dict]) -> int:
         """
@@ -191,11 +196,17 @@ class IntentRouter:
         
         # 4. 大模型兜底
         # logger.debug("使用大模型进行意图分类")
-        return self.classify_agent.generate(
+        llm_intent = self.classify_agent.generate(
             user_msg=user_msg,
             item_desc=item_desc,
             context=context
         )
+        # 归一化：模型输出可能带空白/大小写/多余文字，未命中已知类别时落到default
+        normalized = (llm_intent or '').strip().lower()
+        if normalized not in {'price', 'tech', 'default', 'no_reply'}:
+            logger.warning(f"意图分类输出异常: {llm_intent!r}，回退为default")
+            return 'default'
+        return normalized
 
 
 class BaseAgent:
@@ -283,15 +294,10 @@ class TechAgent(BaseAgent):
 class ClassifyAgent(BaseAgent):
     """意图识别Agent"""
 
-    def generate(self, **args) -> str:
-        response = super().generate(**args)
-        return response
-
 
 class DefaultAgent(BaseAgent):
     """默认处理Agent"""
 
-    def _call_llm(self, messages: List[Dict], *args) -> str:
-        """限制默认回复长度"""
-        response = super()._call_llm(messages, temperature=0.7)
-        return response
+    def _call_llm(self, messages: List[Dict], temperature: float = 0.7) -> str:
+        """默认回复使用较高温度"""
+        return super()._call_llm(messages, temperature=temperature)

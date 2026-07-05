@@ -24,7 +24,11 @@ class ChatContextManager:
         self.max_history = max_history
         self.db_path = db_path
         self._init_db()
-        
+
+    def _connect(self):
+        """创建数据库连接（带busy timeout，支持多任务并发读写）"""
+        return sqlite3.connect(self.db_path, timeout=10)
+
     def _init_db(self):
         """初始化数据库表结构"""
         # 确保数据库目录存在
@@ -32,9 +36,12 @@ class ChatContextManager:
         if db_dir and not os.path.exists(db_dir):
             os.makedirs(db_dir)
             
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
-        
+
+        # WAL模式：允许读写并发，配合消息任务的并发处理
+        cursor.execute('PRAGMA journal_mode=WAL')
+
         # 创建消息表
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages (
@@ -102,7 +109,7 @@ class ChatContextManager:
             item_id: 商品ID
             item_data: 商品信息字典
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
@@ -144,7 +151,7 @@ class ChatContextManager:
         Returns:
             dict: 商品信息字典，如果不存在返回None
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
@@ -174,7 +181,7 @@ class ChatContextManager:
             role: 消息角色 (user/assistant)
             content: 消息内容
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
@@ -219,7 +226,7 @@ class ChatContextManager:
         Returns:
             list: 包含对话历史的列表
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
@@ -258,7 +265,7 @@ class ChatContextManager:
         Args:
             chat_id: 会话ID
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
@@ -291,7 +298,7 @@ class ChatContextManager:
         Returns:
             int: 议价次数
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
         
         try:
