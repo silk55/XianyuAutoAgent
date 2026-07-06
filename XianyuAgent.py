@@ -5,6 +5,37 @@ from openai import OpenAI
 from loguru import logger
 
 
+# ---------- 模块级共用逻辑（内置后端与Coze后端共用） ----------
+
+# 价格意图规则（纯本地判断，不走LLM）
+PRICE_KEYWORDS = ['便宜', '价', '砍价', '少点']
+PRICE_PATTERNS = [r'\d+元', r'能少\d+']
+
+
+def safe_filter(text: str) -> str:
+    """安全过滤模块：命中疑似站外引流词时整条替换为安全提醒"""
+    blocked_phrases = ["微信", "QQ", "支付宝", "银行卡", "线下"]
+    return "[安全提醒]请通过平台沟通" if any(p in text for p in blocked_phrases) else text
+
+
+def match_price_intent(user_msg: str) -> bool:
+    """用关键词/正则规则判断是否为议价消息"""
+    text_clean = re.sub(r'[^\w一-龥]', '', user_msg)
+    if any(kw in text_clean for kw in PRICE_KEYWORDS):
+        return True
+    return any(re.search(p, text_clean) for p in PRICE_PATTERNS)
+
+
+def extract_bargain_count(context: List[Dict]) -> int:
+    """从上下文的system消息中提取议价次数，没有则返回0"""
+    for msg in context:
+        if msg['role'] == 'system' and '议价次数' in msg['content']:
+            match = re.search(r'议价次数[:：]\s*(\d+)', msg['content'])
+            if match:
+                return int(match.group(1))
+    return 0
+
+
 class XianyuReplyBot:
     def __init__(self):
         # 初始化OpenAI客户端
@@ -21,10 +52,10 @@ class XianyuReplyBot:
     def _init_agents(self):
         """初始化各领域Agent"""
         self.agents = {
-            'classify':ClassifyAgent(self.client, self.classify_prompt, self._safe_filter),
-            'price': PriceAgent(self.client, self.price_prompt, self._safe_filter),
-            'tech': TechAgent(self.client, self.tech_prompt, self._safe_filter),
-            'default': DefaultAgent(self.client, self.default_prompt, self._safe_filter),
+            'classify':ClassifyAgent(self.client, self.classify_prompt, safe_filter),
+            'price': PriceAgent(self.client, self.price_prompt, safe_filter),
+            'tech': TechAgent(self.client, self.tech_prompt, safe_filter),
+            'default': DefaultAgent(self.client, self.default_prompt, safe_filter),
         }
 
     def _init_system_prompts(self):
@@ -61,20 +92,17 @@ class XianyuReplyBot:
             logger.error(f"加载提示词时出错: {e}")
             raise
 
-    def _safe_filter(self, text: str) -> str:
-        """安全过滤模块"""
-        blocked_phrases = ["微信", "QQ", "支付宝", "银行卡", "线下"]
-        return "[安全提醒]请通过平台沟通" if any(p in text for p in blocked_phrases) else text
-
     def format_history(self, context: List[Dict]) -> str:
         """格式化对话历史，返回完整的对话记录"""
         # 过滤掉系统消息，只保留用户和助手的对话
         user_assistant_msgs = [msg for msg in context if msg['role'] in ['user', 'assistant']]
         return "\n".join([f"{msg['role']}: {msg['content']}" for msg in user_assistant_msgs])
 
-    def generate_reply(self, user_msg: str, item_desc: str, context: List[Dict]) -> tuple:
+    def generate_reply(self, user_msg: str, item_desc: str, context: List[Dict],
+                       chat_id: str = None) -> tuple:
         """生成回复主流程，返回 (回复内容, 意图)。
 
+        chat_id为后端契约参数（Coze后端用于会话映射），内置后端不使用。
         意图通过返回值传递而非只存在self.last_intent上，
         避免多条消息并发处理时读到别的会话的意图。
         """
@@ -108,7 +136,7 @@ class XianyuReplyBot:
         self.last_intent = intent  # 保存当前意图（并发场景请使用返回值）
 
         # 3. 获取议价次数
-        bargain_count = self._extract_bargain_count(context)
+        bargain_count = extract_bargain_count(context)
         logger.info(f'议价次数: {bargain_count}')
 
         # 4. 生成回复
@@ -120,28 +148,6 @@ class XianyuReplyBot:
         )
         return reply, intent
     
-    def _extract_bargain_count(self, context: List[Dict]) -> int:
-        """
-        从上下文中提取议价次数信息
-        
-        Args:
-            context: 对话历史
-            
-        Returns:
-            int: 议价次数，如果没有找到则返回0
-        """
-        # 查找系统消息中的议价次数信息
-        for msg in context:
-            if msg['role'] == 'system' and '议价次数' in msg['content']:
-                try:
-                    # 提取议价次数
-                    match = re.search(r'议价次数[:：]\s*(\d+)', msg['content'])
-                    if match:
-                        return int(match.group(1))
-                except Exception:
-                    pass
-        return 0
-
     def reload_prompts(self):
         """重新加载所有提示词"""
         logger.info("正在重新加载提示词...")
@@ -158,13 +164,10 @@ class IntentRouter:
             'tech': {  # 技术类优先判定
                 'keywords': ['参数', '规格', '型号', '连接', '对比'],
                 'patterns': [
-                    r'和.+比'             
+                    r'和.+比'
                 ]
             },
-            'price': {
-                'keywords': ['便宜', '价', '砍价', '少点'],
-                'patterns': [r'\d+元', r'能少\d+']
-            }
+            # price规则见模块级 PRICE_KEYWORDS / PRICE_PATTERNS（与Coze后端共用）
         }
         self.classify_agent = classify_agent
 
@@ -183,17 +186,10 @@ class IntentRouter:
                 # logger.debug(f"技术类正则匹配: {pattern}")
                 return 'tech'
 
-        # 3. 价格类检查
-        for intent in ['price']:
-            if any(kw in text_clean for kw in self.rules[intent]['keywords']):
-                # logger.debug(f"价格类关键词匹配: {[kw for kw in self.rules[intent]['keywords'] if kw in text_clean]}")
-                return intent
-            
-            for pattern in self.rules[intent]['patterns']:
-                if re.search(pattern, text_clean):
-                    # logger.debug(f"价格类正则匹配: {pattern}")
-                    return intent
-        
+        # 3. 价格类检查（规则与Coze后端共用）
+        if match_price_intent(user_msg):
+            return 'price'
+
         # 4. 大模型兜底
         # logger.debug("使用大模型进行意图分类")
         llm_intent = self.classify_agent.generate(

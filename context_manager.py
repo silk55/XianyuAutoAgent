@@ -84,6 +84,15 @@ class ChatContextManager:
         )
         ''')
         
+        # 创建Coze会话映射表（chat_id -> Coze conversation_id）
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS coze_conversations (
+            chat_id TEXT PRIMARY KEY,
+            conversation_id TEXT NOT NULL,
+            last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+
         # 创建商品信息表
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS items (
@@ -167,6 +176,49 @@ class ChatContextManager:
         except Exception as e:
             logger.error(f"获取商品信息时出错: {e}")
             return None
+        finally:
+            conn.close()
+
+    def get_coze_conversation(self, chat_id):
+        """获取会话对应的Coze conversation_id，不存在返回None"""
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "SELECT conversation_id FROM coze_conversations WHERE chat_id = ?",
+                (chat_id,)
+            )
+            result = cursor.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            logger.error(f"获取Coze会话映射时出错: {e}")
+            return None
+        finally:
+            conn.close()
+
+    def save_coze_conversation(self, chat_id, conversation_id):
+        """保存会话与Coze conversation_id的映射"""
+        conn = self._connect()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                """
+                INSERT INTO coze_conversations (chat_id, conversation_id, last_updated)
+                VALUES (?, ?, ?)
+                ON CONFLICT(chat_id)
+                DO UPDATE SET conversation_id = ?, last_updated = ?
+                """,
+                (
+                    chat_id, conversation_id, datetime.now().isoformat(),
+                    conversation_id, datetime.now().isoformat()
+                )
+            )
+            conn.commit()
+        except Exception as e:
+            logger.error(f"保存Coze会话映射时出错: {e}")
+            conn.rollback()
         finally:
             conn.close()
 

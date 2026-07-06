@@ -14,7 +14,7 @@
 | 对话上下文归属 | Coze 管。每个闲鱼会话映射一个 Coze `conversation_id`，历史记忆由 Coze 维护，每次只转发当前消息。本地 SQLite 照常入库（人工接管/留痕不受影响），但不再喂给模型。 |
 | 商品信息传递 | `custom_variables`。每次请求传 `{"item_info": 商品JSON, "bargain_count": "N"}`，bot prompt 用 `{{item_info}}` / `{{bargain_count}}` 占位。 |
 | 本地保留的后处理 | ① 敏感词安全过滤（Coze 回复同样过 `safe_filter`）；② 议价次数统计（用 IntentRouter 的 price 关键词/正则规则判断，不走 LLM 分类）。 |
-| 架构 | 鸭子类型对齐，不建抽象基类。`CozeReplyBot` 对齐现有契约 `generate_reply(user_msg, item_desc, context) -> (reply, intent)`，`handle_message` 零改动。第三个后端出现时再抽象。 |
+| 架构 | 鸭子类型对齐，不建抽象基类。后端契约 `generate_reply(user_msg, item_desc, context, chat_id=None) -> (reply, intent)`（实现时扩展：Coze 需要 chat_id 做会话映射，内置后端忽略该参数），`handle_message` 只加一个实参。第三个后端出现时再抽象。 |
 
 ## 环境变量
 

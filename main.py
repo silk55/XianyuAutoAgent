@@ -17,7 +17,7 @@ from context_manager import ChatContextManager
 
 
 class XianyuLive:
-    def __init__(self, cookies_str):
+    def __init__(self, cookies_str, context_manager=None):
         self.xianyu = XianyuApis()
         self.base_url = 'wss://wss-goofish.dingtalk.com/'
         self.cookies_str = cookies_str
@@ -25,7 +25,7 @@ class XianyuLive:
         self.xianyu.session.cookies.update(self.cookies)  # 直接使用 session.cookies.update
         self.myid = self.cookies['unb']
         self.device_id = generate_device_id(self.myid)
-        self.context_manager = ChatContextManager()
+        self.context_manager = context_manager or ChatContextManager()
         
         # 心跳相关配置
         self.heartbeat_interval = int(os.getenv("HEARTBEAT_INTERVAL", "15"))  # 心跳间隔，默认15秒
@@ -502,12 +502,13 @@ class XianyuLive:
             
             # 获取完整的对话上下文
             context = self.context_manager.get_context_by_chat(chat_id)
-            # 生成回复（LLM调用是同步阻塞的，放线程池执行，不阻塞事件循环）
+            # 生成回复（LLM/Coze调用是同步阻塞的，放线程池执行，不阻塞事件循环）
             bot_reply, reply_intent = await asyncio.to_thread(
                 bot.generate_reply,
                 send_message,
                 item_description,
-                context
+                context,
+                chat_id
             )
 
             # 检查是否需要回复
@@ -712,13 +713,34 @@ class XianyuLive:
 
 
 
+def create_reply_bot(context_manager):
+    """按REPLY_BACKEND环境变量创建回复后端
+
+    - builtin（默认）：内置多Agent流水线（XianyuReplyBot）
+    - coze：直接转发给Coze bot（CozeReplyBot）
+    """
+    backend = os.getenv("REPLY_BACKEND", "builtin").strip().lower()
+    if backend == "coze":
+        from coze_agent import CozeReplyBot
+        logger.info("回复后端: coze")
+        return CozeReplyBot(context_manager=context_manager)
+    if backend == "builtin":
+        logger.info("回复后端: builtin")
+        return XianyuReplyBot()
+    raise ValueError(f"未知的REPLY_BACKEND: {backend}（可选值: builtin / coze）")
+
+
 def check_and_complete_env():
-    """检查并补全关键环境变量"""
+    """检查并补全关键环境变量（按回复后端决定必填项）"""
     # 定义关键变量及其默认无效值（占位符）
     critical_vars = {
-        "API_KEY": "默认使用通义千问,apikey通过百炼模型平台获取",
         "COOKIES_STR": "your_cookies_here"
     }
+    if os.getenv("REPLY_BACKEND", "builtin").strip().lower() == "coze":
+        critical_vars["COZE_API_TOKEN"] = ""
+        critical_vars["COZE_BOT_ID"] = ""
+    else:
+        critical_vars["API_KEY"] = "默认使用通义千问,apikey通过百炼模型平台获取"
     
     env_path = ".env"
     updated = False
@@ -786,7 +808,12 @@ if __name__ == '__main__':
     check_and_complete_env()
     
     cookies_str = os.getenv("COOKIES_STR")
-    bot = XianyuReplyBot()
-    xianyuLive = XianyuLive(cookies_str)
+    context_manager = ChatContextManager()
+    try:
+        bot = create_reply_bot(context_manager)
+    except ValueError as e:
+        logger.error(f"回复后端初始化失败: {e}")
+        sys.exit(1)
+    xianyuLive = XianyuLive(cookies_str, context_manager=context_manager)
     # 常驻进程
     asyncio.run(xianyuLive.main())
