@@ -2,7 +2,8 @@ version: '3'
 
 services:
   XianyuAutoAgent:
-    image: shaxiu/xianyuautoagent:latest
+    build: .
+    image: xianyuautoagent:local
     container_name: xianyuautoagent
     restart: always
     volumes:
