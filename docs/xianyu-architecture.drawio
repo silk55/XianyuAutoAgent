@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="XianyuAutoAgent · 架构图" id="xianyu-arch">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="1520" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== 页眉 ===== -->
+        <mxCell id="hd1" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;图名&lt;/font&gt;&lt;br&gt;&lt;font face='Songti SC, STSong, Georgia' style='font-size:21px'&gt;&lt;b&gt;XianyuAutoAgent · 架构图&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="480" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd2" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;日期&lt;/font&gt;&lt;br&gt;&lt;font face='Menlo' style='font-size:13px'&gt;2026-07-06&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="180" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd3" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;真身&lt;/font&gt;&lt;br&gt;repo · &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;docs/xianyu-architecture.drawio&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="680" y="20" width="320" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd4" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;状态&lt;/font&gt;&lt;br&gt;现状图 · Coze 后端已合入" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="20" width="180" height="72" as="geometry" />
+        </mxCell>
+
+        <mxCell id="subtitle" value="闲鱼 AI 客服机器人：WSS 收买家消息 → 解密分流 → 回复后端（builtin / coze，环境变量切换）→ 拟人化发送；SQLite 单文件存储，Docker 单容器部署。" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=13;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="104" width="1160" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 图例 ===== -->
+        <mxCell id="lg1s" value="" style="rounded=0;html=1;fillColor=#EFEFEF;strokeColor=#ABABAB;" vertex="1" parent="1">
+          <mxGeometry x="20" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1t" value="外部系统" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="136" width="80" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2s" value="" style="rounded=0;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;" vertex="1" parent="1">
+          <mxGeometry x="130" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2t" value="接入 / 流程" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="150" y="136" width="100" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3s" value="" style="rounded=0;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;" vertex="1" parent="1">
+          <mxGeometry x="260" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3t" value="builtin 后端" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="280" y="136" width="100" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4s" value="" style="rounded=0;html=1;fillColor=#F5ECFA;strokeColor=#B48CC9;" vertex="1" parent="1">
+          <mxGeometry x="390" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4t" value="coze 后端" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="410" y="136" width="90" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5s" value="" style="rounded=0;html=1;fillColor=#E2F0E2;strokeColor=#7FAE7F;" vertex="1" parent="1">
+          <mxGeometry x="510" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5t" value="两后端共用" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="530" y="136" width="100" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6s" value="" style="rounded=0;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;" vertex="1" parent="1">
+          <mxGeometry x="640" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg6t" value="存储" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="660" y="136" width="60" height="18" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 外部层 ===== -->
+        <mxCell id="extL" value="&lt;b style='font-size:15px'&gt;外部：闲鱼平台&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;协议均为逆向，无官方文档；Cookie 是唯一身份凭证&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="170" width="1160" height="176" as="geometry" />
+        </mxCell>
+        <mxCell id="ext1" value="&lt;b style='font-size:13px'&gt;闲鱼 IM&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;wss-goofish.dingtalk.com&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;买家/卖家消息以 sync 包推送（base64 + msgpack 加密）&lt;/li&gt;&lt;li&gt;/reg 注册（需 token）· 心跳 /! · 每条消息需 ACK&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#ABABAB;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="extL">
+          <mxGeometry x="20" y="44" width="560" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="ext2" value="&lt;b style='font-size:13px'&gt;闲鱼 HTTP API&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;h5api.m.goofish.com&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;mtop token 接口（MD5 sign 签名）· 商品详情 idle.pc.detail&lt;/li&gt;&lt;li&gt;风控（RGV587）需人工过滑块换 Cookie&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#ABABAB;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="extL">
+          <mxGeometry x="600" y="44" width="540" height="112" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge1" value="WSS 双向：买家消息推送 ↓ / 机器人回复发送 ↑" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;startArrow=block;startFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ext1" target="accessL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" value="HTTPS：token / 商品详情 / cookie 续期" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="accessL" target="ext2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 接入层 ===== -->
+        <mxCell id="accessL" value="&lt;b style='font-size:15px'&gt;接入层 XianyuLive&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;main.py&lt;/span&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;· asyncio 单进程 · 阻塞调用一律 to_thread，事件循环只跑 IO&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="404" width="1160" height="316" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="&lt;b style='font-size:13px'&gt;连接维持&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;heartbeat / token loop&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;心跳 15s，响应超时主动 close 触发重连&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;token 每 1h 刷新，刷新后重建连接&lt;/li&gt;&lt;li&gt;断线 5s 重连，重连带 session 最新 cookie&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="accessL">
+          <mxGeometry x="20" y="44" width="560" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="&lt;b style='font-size:13px'&gt;消息管线&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;handle_message&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;ACK → 解密（msgpack）→ 类型过滤（订单/输入中/系统消息）&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;过期过滤（5min）→ 商品信息（缓存 miss 走 API）&lt;/li&gt;&lt;li&gt;每条消息 &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;create_task&lt;/span&gt; 并发处理，慢回复不阻塞收包&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="accessL">
+          <mxGeometry x="600" y="44" width="540" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="&lt;b style='font-size:13px'&gt;会话控制&lt;/b&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;人工接管：卖家发切换关键词（&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;TOGGLE_KEYWORDS&lt;/span&gt; 精确匹配），1h 超时自动恢复&lt;/li&gt;&lt;li&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;SIMULATE_HUMAN_TYPING&lt;/span&gt; 拟人延迟（按字数，≤10s）&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="accessL">
+          <mxGeometry x="20" y="176" width="560" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" value="&lt;b style='font-size:13px'&gt;平台 API 封装&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;XianyuApis.py&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;get_token：失败 → hasLogin 重登（仅一次）→ 明确退出&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;get_item_info：商品详情，写入本地缓存&lt;/li&gt;&lt;li&gt;cookie 去重/续期，自动写回 .env&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="accessL">
+          <mxGeometry x="600" y="176" width="540" height="118" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge3" value="后端契约：generate_reply(msg, item_desc, context, chat_id) → (reply, intent) · 「-」= 不回复" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="accessL" target="backendL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 回复后端 ===== -->
+        <mxCell id="backendL" value="&lt;b style='font-size:15px'&gt;回复后端&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;REPLY_BACKEND=builtin|coze&lt;/span&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;· 鸭子类型对齐同一契约，二选一实例化，无抽象基类&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="778" width="1160" height="248" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="&lt;b style='font-size:13px'&gt;builtin · XianyuReplyBot&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7C9CC9;border-radius:3px;padding:0 3px'&gt;XianyuAgent.py&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;意图路由：tech 规则 → price 规则 → LLM 分类兜底（输出白名单校验）&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;price / tech / default 三个 Agent；议价轮次驱动动态温度&lt;/li&gt;&lt;li&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7C9CC9;border-radius:3px;padding:0 3px'&gt;qwen-max @ dashscope&lt;/span&gt; · 上下文来自本地 SQLite&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="backendL">
+          <mxGeometry x="20" y="44" width="435" height="178" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="&lt;b style='font-size:13px'&gt;coze · CozeReplyBot&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #B48CC9;border-radius:3px;padding:0 3px'&gt;coze_agent.py&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;v3 chat 非流式轮询：create → retrieve → message/list（60s 超时）&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;记忆在 Coze 侧：chat_id → conversation_id 持久化复用&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;custom_variables：&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #B48CC9;border-radius:3px;padding:0 3px'&gt;{{item_info}}&lt;/span&gt; &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #B48CC9;border-radius:3px;padding:0 3px'&gt;{{bargain_count}}&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #B48CC9;border-radius:3px;padding:0 3px'&gt;api.coze.cn&lt;/span&gt; · PAT 鉴权&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5ECFA;strokeColor=#B48CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="backendL">
+          <mxGeometry x="475" y="44" width="435" height="178" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="&lt;b style='font-size:13px'&gt;两后端共用&lt;/b&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7FAE7F;border-radius:3px;padding:0 3px'&gt;safe_filter&lt;/span&gt; 敏感词兜底（微信/QQ… → 安全提醒）&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7FAE7F;border-radius:3px;padding:0 3px'&gt;match_price_intent&lt;/span&gt; 议价识别 → 计数&lt;/li&gt;&lt;li&gt;意图仅 price / tech / default / no_reply&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E2F0E2;strokeColor=#7FAE7F;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="backendL">
+          <mxGeometry x="930" y="44" width="210" height="178" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge4" value="对话/议价计数 ← main.py · 商品缓存 ← XianyuApis · 会话映射 ← coze_agent" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="backendL" target="storeL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 存储层 ===== -->
+        <mxCell id="storeL" value="&lt;b style='font-size:15px'&gt;存储 · SQLite&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;data/chat_history.db&lt;/span&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;· WAL + busy timeout（消息并发处理）· Docker volume 持久化&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1084" width="1160" height="176" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="&lt;b style='font-size:13px'&gt;messages&lt;/b&gt;&lt;div style='margin-top:8px'&gt;对话留痕（含人工回复），每会话保留最近 100 条。builtin 的上下文来源。&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="storeL">
+          <mxGeometry x="20" y="44" width="265" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="&lt;b style='font-size:13px'&gt;chat_bargain_counts&lt;/b&gt;&lt;div style='margin-top:8px'&gt;议价轮次（按会话）。builtin 喂动态温度，coze 走 custom_variables。&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="storeL">
+          <mxGeometry x="305" y="44" width="265" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="&lt;b style='font-size:13px'&gt;items&lt;/b&gt;&lt;div style='margin-top:8px'&gt;商品信息缓存（标题/价格/SKU JSON），miss 时才走闲鱼 API。&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="storeL">
+          <mxGeometry x="590" y="44" width="265" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="&lt;b style='font-size:13px'&gt;coze_conversations&lt;/b&gt;&lt;div style='margin-top:8px'&gt;chat_id → Coze conversation_id 映射，重启不丢 Coze 侧记忆。&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="storeL">
+          <mxGeometry x="875" y="44" width="265" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 底部：部署形态 + 关键约定 ===== -->
+        <mxCell id="d1" value="&lt;b style='font-size:13px'&gt;部署形态&lt;/b&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;单容器，国内服务器（海外 IP 易触发风控）&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;docker compose up -d --build&lt;/span&gt;（上游镜像不含本仓改动，必须本地 build）&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;.env 走 volume 不进镜像：换 cookie/token 只需 restart，不用重 build&lt;/li&gt;&lt;li&gt;cookie 失效 → 明确报错退出 → restart:always 循环 → 人工换 cookie 恢复&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=8;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1290" width="640" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="&lt;b style='font-size:13px'&gt;关键约定（违反即 bug）&lt;/b&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;同步阻塞调用（LLM/HTTP）一律 &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;asyncio.to_thread&lt;/span&gt;&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;意图经返回值传递，不读共享 last_intent（并发竞态）&lt;/li&gt;&lt;li&gt;闲鱼 IM 无流式接口：消息不可编辑，伪流式 = typing 状态 + 分句发送&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=8;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1290" width="500" height="140" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
