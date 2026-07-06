@@ -2,6 +2,11 @@ FROM python:3.10-alpine AS builder
 
 WORKDIR /app
 
+# 国内构建加速：apk 换清华源、pip 换清华源（可用 --build-arg 覆盖或置空回官方源）
+ARG APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
+ARG PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+RUN if [ -n "$APK_MIRROR" ]; then sed -i "s#dl-cdn.alpinelinux.org#$APK_MIRROR#g" /etc/apk/repositories; fi
+
 # 只安装构建所需的依赖
 RUN apk add --no-cache --virtual .build-deps \
     gcc \
@@ -15,7 +20,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # 复制依赖文件并安装
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -i "$PIP_INDEX_URL" -r requirements.txt
 
 # 第二阶段：最终镜像
 FROM python:3.10-alpine
@@ -32,6 +37,10 @@ ENV TZ=Asia/Shanghai \
     PATH="/opt/venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
+
+# 运行阶段同样换 apk 源
+ARG APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
+RUN if [ -n "$APK_MIRROR" ]; then sed -i "s#dl-cdn.alpinelinux.org#$APK_MIRROR#g" /etc/apk/repositories; fi
 
 # 只安装运行时必要的包
 RUN apk add --no-cache \
