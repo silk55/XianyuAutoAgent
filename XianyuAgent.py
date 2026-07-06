@@ -213,6 +213,10 @@ class BaseAgent:
         self.system_prompt = system_prompt
         self.safety_filter = safety_filter
 
+    def _get_model(self) -> str:
+        """本Agent使用的模型，子类可覆盖"""
+        return os.getenv("MODEL_NAME", "qwen-max")
+
     def generate(self, user_msg: str, item_desc: str, context: str, bargain_count: int = 0) -> str:
         """生成回复模板方法"""
         messages = self._build_messages(user_msg, item_desc, context)
@@ -229,7 +233,7 @@ class BaseAgent:
     def _call_llm(self, messages: List[Dict], temperature: float = 0.4) -> str:
         """调用大模型"""
         response = self.client.chat.completions.create(
-            model=os.getenv("MODEL_NAME", "qwen-max"),
+            model=self._get_model(),
             messages=messages,
             temperature=temperature,
             max_tokens=500,
@@ -248,7 +252,7 @@ class PriceAgent(BaseAgent):
         messages[0]['content'] += f"\n▲当前议价轮次：{bargain_count}"
 
         response = self.client.chat.completions.create(
-            model=os.getenv("MODEL_NAME", "qwen-max"),
+            model=self._get_model(),
             messages=messages,
             temperature=dynamic_temp,
             max_tokens=500,
@@ -269,7 +273,7 @@ class TechAgent(BaseAgent):
         # messages[0]['content'] += "\n▲知识库：\n" + self._fetch_tech_specs()
 
         response = self.client.chat.completions.create(
-            model=os.getenv("MODEL_NAME", "qwen-max"),
+            model=self._get_model(),
             messages=messages,
             temperature=0.4,
             max_tokens=500,
@@ -289,6 +293,10 @@ class TechAgent(BaseAgent):
 
 class ClassifyAgent(BaseAgent):
     """意图识别Agent"""
+
+    def _get_model(self) -> str:
+        """分类是纯判别任务，可单独配小模型（如qwen-turbo）压时延；未配置时回落MODEL_NAME"""
+        return os.getenv("CLASSIFY_MODEL_NAME") or os.getenv("MODEL_NAME", "qwen-max")
 
 
 class DefaultAgent(BaseAgent):
