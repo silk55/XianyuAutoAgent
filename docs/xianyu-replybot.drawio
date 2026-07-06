@@ -1,0 +1,134 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="XianyuReplyBot · builtin 后端" id="xianyu-replybot">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="1460" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== 页眉 ===== -->
+        <mxCell id="hd1" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;图名&lt;/font&gt;&lt;br&gt;&lt;font face='Songti SC, STSong, Georgia' style='font-size:21px'&gt;&lt;b&gt;XianyuReplyBot · builtin 后端内部&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="500" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd2" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;日期&lt;/font&gt;&lt;br&gt;&lt;font face='Menlo' style='font-size:13px'&gt;2026-07-06&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="520" y="20" width="160" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd3" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;真身&lt;/font&gt;&lt;br&gt;repo · &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;docs/xianyu-replybot.drawio&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="680" y="20" width="300" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="hd4" value="&lt;font style='font-size:10px' color='#8A8A8A'&gt;代码&lt;/font&gt;&lt;br&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;XianyuAgent.py&lt;/span&gt; · ~300 行" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=middle;spacing=14;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="980" y="20" width="200" height="72" as="geometry" />
+        </mxCell>
+
+        <mxCell id="subtitle" value="一条消息最多两次 LLM 调用：规则路由命中则省掉分类调用，只剩一次生成；Agent 按意图分治，各带专属提示词与温度策略。" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=13;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="104" width="1160" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 图例 ===== -->
+        <mxCell id="lg1s" value="" style="rounded=0;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1t" value="流程 / 路由" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="136" width="100" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2s" value="" style="rounded=0;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;" vertex="1" parent="1">
+          <mxGeometry x="150" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2t" value="Agent（LLM 调用方）" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="170" y="136" width="160" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3s" value="" style="rounded=0;html=1;fillColor=#EFEFEF;strokeColor=#ABABAB;" vertex="1" parent="1">
+          <mxGeometry x="340" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3t" value="外部服务" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="360" y="136" width="80" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4s" value="" style="rounded=0;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;" vertex="1" parent="1">
+          <mxGeometry x="450" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4t" value="提示词资产" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="470" y="136" width="90" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5s" value="" style="rounded=0;html=1;fillColor=#E2F0E2;strokeColor=#7FAE7F;" vertex="1" parent="1">
+          <mxGeometry x="570" y="138" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5t" value="共用逻辑（与 coze 后端）" style="text;html=1;align=left;verticalAlign=middle;fontColor=#444444;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="590" y="136" width="180" height="18" as="geometry" />
+        </mxCell>
+
+        <!-- ===== L1 入口 ===== -->
+        <mxCell id="inL" value="&lt;b style='font-size:15px'&gt;入口与上下文准备&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;由 main.py 经 asyncio.to_thread 调用，本类内全是同步代码&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="170" width="1160" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="i1" value="&lt;b style='font-size:13px'&gt;契约&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;generate_reply&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;(user_msg, item_desc, context, chat_id) → (reply, intent)&lt;/span&gt;&lt;/li&gt;&lt;li&gt;意图走返回值（并发安全）；chat_id 本后端不使用&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="inL">
+          <mxGeometry x="20" y="44" width="560" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="i2" value="&lt;b style='font-size:13px'&gt;上下文整形&lt;/b&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;format_history&lt;/span&gt;：SQLite 对话历史 → 「role: content」文本&lt;/li&gt;&lt;li&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7FAE7F;border-radius:3px;padding:0 3px'&gt;extract_bargain_count&lt;/span&gt;：从 system 消息提取议价轮次&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="inL">
+          <mxGeometry x="600" y="44" width="540" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge1" value="user_msg + item_desc + 格式化历史" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="inL" target="routeL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== L2 意图路由 ===== -->
+        <mxCell id="routeL" value="&lt;b style='font-size:15px'&gt;意图路由 IntentRouter&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;三级短路：①② 纯规则零 LLM 成本，命中即返回；只有都不中才花一次分类调用&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="394" width="1160" height="208" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="&lt;b style='font-size:13px'&gt;① tech 规则&lt;/b&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:11px'&gt;最高优先&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;关键词：参数/规格/型号/连接/对比&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;正则：&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;和.+比&lt;/span&gt;&lt;/li&gt;&lt;li&gt;先去标点再匹配&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="routeL">
+          <mxGeometry x="20" y="44" width="360" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="&lt;b style='font-size:13px'&gt;② price 规则&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7FAE7F;border-radius:3px;padding:0 3px'&gt;match_price_intent&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;关键词：便宜/价/砍价/少点&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;正则：&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;\d+元&lt;/span&gt; &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;能少\d+&lt;/span&gt;&lt;/li&gt;&lt;li&gt;模块级函数，coze 后端同用此规则计议价&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E2F0E2;strokeColor=#7FAE7F;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="routeL">
+          <mxGeometry x="400" y="44" width="360" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="&lt;b style='font-size:13px'&gt;③ LLM 分类兜底&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;ClassifyAgent&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;classify_prompt：约定仅输出小写类别名&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;归一化 strip/lower + 白名单 {price, tech, default, no_reply}&lt;/li&gt;&lt;li&gt;非法输出 → 落 default（记 warning）；提示词爆破类 → no_reply&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="routeL">
+          <mxGeometry x="780" y="44" width="360" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge2" value="intent（classify 为内部意图，不对外分发；no_reply 直接返回「-」不调 LLM）" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="routeL" target="agentL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== L3 Agent 分发 ===== -->
+        <mxCell id="agentL" value="&lt;b style='font-size:15px'&gt;Agent 分发&lt;/b&gt;&amp;nbsp;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;BaseAgent 模板方法：_build_messages → _call_llm → safe_filter；子类只改温度/参数&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="662" width="1160" height="216" as="geometry" />
+        </mxCell>
+        <mxCell id="g1" value="&lt;b style='font-size:13px'&gt;PriceAgent&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;议价&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;动态温度 &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7C9CC9;border-radius:3px;padding:0 3px'&gt;min(0.3+n×0.15, 0.9)&lt;/span&gt;——越磨越松&lt;/li&gt;&lt;li&gt;prompt 注入当前议价轮次&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="agentL">
+          <mxGeometry x="20" y="44" width="270" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" value="&lt;b style='font-size:13px'&gt;TechAgent&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;技术咨询&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;温度 0.4（求稳）&lt;/li&gt;&lt;li&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7C9CC9;border-radius:3px;padding:0 3px'&gt;enable_search=True&lt;/span&gt; 联网查参数&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="agentL">
+          <mxGeometry x="310" y="44" width="270" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" value="&lt;b style='font-size:13px'&gt;DefaultAgent&lt;/b&gt;&amp;nbsp;&lt;font face='Menlo' color='#7A7A7A' style='font-size:11px'&gt;其他&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;温度 0.7（闲聊/物流/问候）&lt;/li&gt;&lt;li&gt;未知意图的兜底去向&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E4EDF9;strokeColor=#7C9CC9;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="agentL">
+          <mxGeometry x="600" y="44" width="270" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="g4" value="&lt;b style='font-size:13px'&gt;no_reply 分支&lt;/b&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:11px'&gt;非 Agent&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;直接返回 &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#ECEFF3;border:1px solid #D3D9E0;border-radius:3px;padding:0 3px'&gt;(&quot;-&quot;, no_reply)&lt;/span&gt;，零生成成本&lt;/li&gt;&lt;li&gt;main.py 不发送，但用户消息仍入库&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3F3F1;strokeColor=#CFCFCC;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="agentL">
+          <mxGeometry x="890" y="44" width="250" height="148" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge3" value="messages = [system: 商品信息+对话历史+专属提示词, user: 当前消息]" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;strokeColor=#333333;strokeWidth=1;endArrow=block;endFill=1;fontSize=12;fontColor=#555555;labelBackgroundColor=#FFFFFF;fontFamily=PingFang SC;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="agentL" target="genL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== L4 生成与出口 ===== -->
+        <mxCell id="genL" value="&lt;b style='font-size:15px'&gt;生成与出口&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=6;fontSize=12;fontFamily=PingFang SC;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="938" width="1160" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="&lt;b style='font-size:13px'&gt;DashScope（通义千问）&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #ABABAB;border-radius:3px;padding:0 3px'&gt;OpenAI 兼容接口&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #ABABAB;border-radius:3px;padding:0 3px'&gt;MODEL_NAME&lt;/span&gt; 默认 qwen-max · &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #ABABAB;border-radius:3px;padding:0 3px'&gt;MODEL_BASE_URL&lt;/span&gt; 可换任意兼容端点&lt;/li&gt;&lt;li&gt;max_tokens 500 · top_p 0.8 · 非流式（闲鱼 IM 无流式落点）&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#ABABAB;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="genL">
+          <mxGeometry x="20" y="44" width="560" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="&lt;b style='font-size:13px'&gt;出口过滤&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #7FAE7F;border-radius:3px;padding:0 3px'&gt;safe_filter&lt;/span&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;命中 微信/QQ/支付宝/银行卡/线下 → 整条替换为安全提醒&lt;/li&gt;&lt;li&gt;每个 Agent 的回复都过此闸再返回 (reply, intent)&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E2F0E2;strokeColor=#7FAE7F;align=left;verticalAlign=top;spacing=10;spacingTop=6;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="genL">
+          <mxGeometry x="600" y="44" width="540" height="112" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 底部：提示词资产 + 关键行为 ===== -->
+        <mxCell id="p1" value="&lt;b style='font-size:13px'&gt;提示词资产&lt;/b&gt;&amp;nbsp;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #D9A94A;border-radius:3px;padding:0 3px'&gt;prompts/&lt;/span&gt;&amp;nbsp;&lt;font color='#8A8A8A' style='font-size:12px'&gt;构造时装载进各 Agent，reload_prompts 可热重载&lt;/font&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;&lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #D9A94A;border-radius:3px;padding:0 3px'&gt;{classify,price,tech,default}_prompt.txt&lt;/span&gt; 用户自定义优先&lt;/li&gt;&lt;li&gt;缺失时回落 &lt;span style='font-family:Menlo,monospace;font-size:11px;background-color:#FFFFFF;border:1px solid #D9A94A;border-radius:3px;padding:0 3px'&gt;*_example.txt&lt;/span&gt;（Docker 镜像内已重命名为正式文件）&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FCF0DA;strokeColor=#D9A94A;align=left;verticalAlign=top;spacing=14;spacingTop=8;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1148" width="640" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="&lt;b style='font-size:13px'&gt;成本与失败语义&lt;/b&gt;&lt;ul style='margin:8px 0 0 16px;padding:0'&gt;&lt;li style='margin-bottom:5px'&gt;规则命中：1 次 LLM 调用；规则不中：2 次（分类+生成）串行&lt;/li&gt;&lt;li style='margin-bottom:5px'&gt;LLM 异常直接上抛 → main.py 捕获记日志、该条不回复&lt;/li&gt;&lt;li&gt;延迟大头 = 分类兜底调用；可换小模型（qwen-turbo）压时延&lt;/li&gt;&lt;/ul&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1A1A1A;strokeWidth=2;align=left;verticalAlign=top;spacing=14;spacingTop=8;fontSize=12;fontFamily=PingFang SC;" vertex="1" parent="1">
+          <mxGeometry x="680" y="1148" width="500" height="130" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
