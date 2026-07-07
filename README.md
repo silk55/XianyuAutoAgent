@@ -86,6 +86,38 @@ COOKIES_STR自行在闲鱼网页端获取cookies(网页端F12打开控制台，�
 python main.py
 ```
 
+### Docker 部署
+
+需要先安装 [Docker](https://docs.docker.com/get-docker/)（Windows/macOS 用 Docker Desktop）。
+
+**macOS / Linux**（用 Makefile 一键操作）：
+```bash
+make env      # 首次：从 .env.example 生成 .env，然后编辑填入配置
+make up       # 打包镜像并后台启动
+make logs     # 跟踪日志
+make restart  # 改完 .env 后重启（不重新构建）
+make down     # 停止并移除容器
+```
+
+**Windows**（PowerShell / CMD）：
+
+Makefile 的命令脚本是 POSIX shell 语法，Windows 原生环境跑不了（WSL 或 Git Bash 中装了 make 则可以照常用）。直接用下面的等价命令即可：
+
+| Makefile 命令 | Windows 等价命令（PowerShell / CMD） | 说明 |
+| --- | --- | --- |
+| `make env` | `copy .env.example .env` | 首次配置，之后编辑 `.env` 填入配置 |
+| `make up` | `docker compose up -d --build` | 打包镜像并后台启动 |
+| `make logs` | `docker compose logs -f --tail=100` | 跟踪日志 |
+| `make restart` | `docker compose restart` | 改完 `.env` 后重启（不重新构建） |
+| `make down` | `docker compose down` | 停止并移除容器 |
+| `make ps` | `docker compose ps` | 查看容器状态 |
+| `make clean` | `docker compose down --rmi local` | 停容器并删除本地镜像 |
+| `make test` | `python -m unittest discover -s tests -v` | 跑测试（需本地已装依赖） |
+
+⚠️ Windows 注意事项：
+- **启动前必须先创建 `.env` 文件**（`make up` 会自动检查，手动执行时没有这层保护）：缺少 `.env` 时 Docker 会把它挂载成一个**目录**，导致容器启动失败。
+- 旧版 Docker 若无 `docker compose` 子命令，请将上表中的 `docker compose` 替换为 `docker-compose`。
+
 ### 自定义提示词
 
 可以通过编辑 `prompts` 目录下的文件来自定义各个专家的提示词：
