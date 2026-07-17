@@ -22,9 +22,11 @@ class XianyuLive:
         self.base_url = 'wss://wss-goofish.dingtalk.com/'
         self.cookies_str = cookies_str
         self.cookies = trans_cookies(cookies_str)
-        self.xianyu.session.cookies.update(self.cookies)  # 直接使用 session.cookies.update
+        # 逐个set而非update：兼容 curl_cffi / requests 两种 cookie 实现，且显式绑定域名
+        for _k, _v in self.cookies.items():
+            self.xianyu.session.cookies.set(_k, _v, domain='.goofish.com')
         self.myid = self.cookies['unb']
-        self.device_id = generate_device_id(self.myid)
+        self.device_id = self._load_or_create_device_id()
         self.context_manager = context_manager or ChatContextManager()
         
         # 心跳相关配置
@@ -38,10 +40,16 @@ class XianyuLive:
         # Token刷新相关配置
         self.token_refresh_interval = int(os.getenv("TOKEN_REFRESH_INTERVAL", "3600"))  # Token刷新间隔，默认1小时
         self.token_retry_interval = int(os.getenv("TOKEN_RETRY_INTERVAL", "300"))       # Token重试间隔，默认5分钟
+        # Token刷新抖动：精确整点刷新+强制重连是规律的风控特征，加0~10分钟随机抖动打散节奏
+        self._refresh_jitter = random.randint(0, int(os.getenv("TOKEN_REFRESH_JITTER", "600")))
         self.last_token_refresh_time = 0
         self.current_token = None
         self.token_refresh_task = None
         self.connection_restart_flag = False  # 连接重启标志
+
+        # token 来源：http（curl_cffi 直接调 mtop，默认）/ browser（容器内无头真实Chromium取token）
+        self.token_provider = os.getenv("TOKEN_PROVIDER", "http").strip().lower()
+        self._browser_provider = None
         
         # 人工接管相关配置
         self.manual_mode_conversations = set()  # 存储处于人工接管模式的会话ID
@@ -62,22 +70,64 @@ class XianyuLive:
         # 正在处理中的消息任务（保持强引用，防止task被GC）
         self._msg_tasks = set()
 
+    def _load_or_create_device_id(self):
+        """设备ID固定化。
+
+        原实现每次启动都用 random 生成新 device_id，等于每次重启都是一台"新设备"，
+        对 mtop token 接口是明显的风控特征。这里持久化到 .env 的 DEVICE_ID 复用，
+        让设备指纹在重启间保持稳定。
+        """
+        did = os.getenv("DEVICE_ID", "").strip()
+        if did:
+            return did
+        did = generate_device_id(self.myid)
+        try:
+            if not os.path.exists(".env"):
+                open(".env", "a", encoding="utf-8").close()
+            set_key(".env", "DEVICE_ID", did)
+            logger.info(f"已生成并持久化设备ID到 .env: {did}")
+        except Exception as e:
+            logger.warning(f"设备ID持久化失败（本次运行仍可用，但重启后会变）: {e}")
+        return did
+
     def get_current_cookie_str(self):
         """从session获取最新的cookie字符串（cookie可能已被API层轮换更新）"""
         cookie_str = '; '.join(
-            f"{cookie.name}={cookie.value}" for cookie in self.xianyu.session.cookies
+            f"{cookie.name}={cookie.value}" for cookie in self.xianyu._iter_cookies()
         )
         return cookie_str if cookie_str else self.cookies_str
+
+    async def _acquire_token_result(self):
+        """按 token_provider 获取 token 结果，统一返回 {"data":{"accessToken":...}} 或 None。"""
+        if self.token_provider == "browser":
+            if self._browser_provider is None:
+                from browser_token import BrowserTokenProvider
+                self._browser_provider = BrowserTokenProvider(self.get_current_cookie_str())
+                await self._browser_provider.start()
+            result = await self._browser_provider.fetch_token_result(
+                timeout=int(os.getenv("BROWSER_TOKEN_TIMEOUT", "60"))
+            )
+            # 把浏览器现场刷新过的 cookie 同步回 HTTP session（WebSocket 用它鉴权）
+            if result:
+                try:
+                    fresh = await self._browser_provider.current_cookie_str()
+                    if fresh:
+                        self.cookies = trans_cookies(fresh)
+                        for _k, _v in self.cookies.items():
+                            self.xianyu.session.cookies.set(_k, _v, domain='.goofish.com')
+                except Exception as e:
+                    logger.debug(f"同步浏览器cookie失败: {e}")
+            return result
+        # http 后端：同步HTTP请求放线程池，避免阻塞事件循环（心跳会被卡住）
+        return await asyncio.to_thread(self.xianyu.get_token, self.device_id)
 
     async def refresh_token(self):
         """刷新token"""
         try:
-            logger.info("开始刷新token...")
+            logger.info(f"开始刷新token...（来源: {self.token_provider}）")
 
-            # 获取新token（如果Cookie失效，get_token会直接退出程序）
-            # 放到线程池执行，避免同步HTTP请求阻塞事件循环（心跳会被卡住）
-            token_result = await asyncio.to_thread(self.xianyu.get_token, self.device_id)
-            if 'data' in token_result and 'accessToken' in token_result['data']:
+            token_result = await self._acquire_token_result()
+            if token_result and 'data' in token_result and 'accessToken' in token_result['data']:
                 new_token = token_result['data']['accessToken']
                 self.current_token = new_token
                 self.last_token_refresh_time = time.time()
@@ -97,8 +147,10 @@ class XianyuLive:
             try:
                 current_time = time.time()
                 
-                # 检查是否需要刷新token
-                if current_time - self.last_token_refresh_time >= self.token_refresh_interval:
+                # 检查是否需要刷新token（带抖动，避免整点规律）
+                if current_time - self.last_token_refresh_time >= (self.token_refresh_interval + self._refresh_jitter):
+                    # 重新掷一次抖动，让下一轮刷新时刻同样不规律
+                    self._refresh_jitter = random.randint(0, int(os.getenv("TOKEN_REFRESH_JITTER", "600")))
                     logger.info("Token即将过期，准备刷新...")
                     
                     new_token = await self.refresh_token()

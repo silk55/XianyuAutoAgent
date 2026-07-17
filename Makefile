@@ -3,10 +3,11 @@
 
 # 兼容 docker compose v2 与旧版 docker-compose
 DOCKER_COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
-PYTHON ?= python3
+# 优先用项目 venv（见 README/环境准备）；没有则回退系统 python3
+PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 
 .DEFAULT_GOAL := help
-.PHONY: help env build up down restart logs ps test smoke clean
+.PHONY: help env build up down restart logs ps test smoke clean token
 
 help: ## 显示所有命令
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -48,6 +49,9 @@ test: ## 跑测试套件（需本地 python 环境有依赖）
 
 smoke: ## Coze 连通性冒烟（需 .env 已配 COZE_API_TOKEN/COZE_BOT_ID）
 	$(PYTHON) scripts/coze_smoke_test.py "你好，这个还在吗？"
+
+token: ## 宿主机开真Chrome手动过滑块+重铸Cookie写回.env（撞RGV587时用）。需先 pip install playwright && playwright install chromium
+	$(PYTHON) scripts/fetch_token_browser.py
 
 clean: ## 停容器并删除本地镜像
 	$(DOCKER_COMPOSE) down --rmi local

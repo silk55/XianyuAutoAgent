@@ -3,15 +3,34 @@ import os
 import re
 import sys
 
-import requests
 from loguru import logger
 from utils.xianyu_utils import generate_sign
+
+# HTTP客户端：优先用 curl_cffi 模拟真实Chrome的TLS/JA3指纹。
+# mtop反爬(阿里云SM)不仅看cookie，还看客户端TLS握手/HTTP2/请求头顺序像不像浏览器；
+# 用普通requests的话TLS指纹一眼是Python，即便滑块过了、cookie全、IP对，反爬重新评估
+# 仍会判定为机器人并持续弹 RGV587 验证墙。curl_cffi 让这层指纹对齐真实Chrome。
+try:
+    from curl_cffi import requests as _http
+    _IMPERSONATE = os.getenv("IMPERSONATE", "chrome")
+except ImportError:
+    import requests as _http
+    _IMPERSONATE = None
+    logger.warning(
+        "未安装 curl_cffi，已回退到 requests；TLS指纹为Python，mtop极易触发风控 RGV587。"
+        "强烈建议: pip install curl_cffi"
+    )
 
 
 class XianyuApis:
     def __init__(self):
         self.url = 'https://h5api.m.goofish.com/h5/mtop.taobao.idlemessage.pc.login.token/1.0/'
-        self.session = requests.Session()
+        self._impersonate = _IMPERSONATE
+        if _IMPERSONATE:
+            self.session = _http.Session(impersonate=_IMPERSONATE)
+        else:
+            self.session = _http.Session()
+        # 功能性请求头（UA/sec-ch-ua/sec-fetch 交给 impersonate 统一提供，避免版本打架）
         self.session.headers.update({
             'accept': 'application/json',
             'accept-language': 'zh-CN,zh;q=0.9',
@@ -20,44 +39,57 @@ class XianyuApis:
             'pragma': 'no-cache',
             'priority': 'u=1, i',
             'referer': 'https://www.goofish.com/',
-            'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
         })
-        
+        if not _IMPERSONATE:
+            # 回退 requests 时才手动补浏览器指纹头（impersonate 模式下由 curl_cffi 提供，且更真实）
+            self.session.headers.update({
+                'sec-ch-ua': '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Windows"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-site',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+            })
+
+    def _post(self, url, **kwargs):
+        """统一POST：curl_cffi 可用时逐请求带上 impersonate，回退 requests 则直接透传。"""
+        if self._impersonate:
+            kwargs.setdefault('impersonate', self._impersonate)
+        return self.session.post(url, **kwargs)
+
+    def _iter_cookies(self):
+        """跨 curl_cffi / requests 统一遍历 cookie 对象（curl_cffi 用 .jar，requests 直接可迭代）。"""
+        jar = getattr(self.session.cookies, 'jar', self.session.cookies)
+        return list(jar)
+
     def clear_duplicate_cookies(self):
-        """清理重复的cookies"""
-        # 创建一个新的CookieJar
-        new_jar = requests.cookies.RequestsCookieJar()
-        
-        # 记录已经添加过的cookie名称
-        added_cookies = set()
-        
-        # 按照cookies列表的逆序遍历（最新的通常在后面）
-        cookie_list = list(self.session.cookies)
-        cookie_list.reverse()
-        
-        for cookie in cookie_list:
-            # 如果这个cookie名称还没有添加过，就添加到新jar中
-            if cookie.name not in added_cookies:
-                new_jar.set_cookie(cookie)
-                added_cookies.add(cookie.name)
-                
-        # 替换session的cookies
-        self.session.cookies = new_jar
-        
+        """清理重复的cookies（保留最新的一份）。
+
+        直接在底层 cookiejar 上原地去重，兼容 curl_cffi 与 requests 两种 cookie 实现；
+        去重失败不致命（重复cookie只是冗余，不影响请求）。
+        """
+        try:
+            jar = getattr(self.session.cookies, 'jar', self.session.cookies)
+            # 逆序遍历，最新的（通常在后）优先保留
+            seen = {}
+            for cookie in reversed(list(jar)):
+                if cookie.name not in seen:
+                    seen[cookie.name] = cookie
+            jar.clear()
+            for cookie in seen.values():
+                jar.set_cookie(cookie)
+        except Exception as e:
+            logger.debug(f"清理重复cookie跳过（非致命）: {e}")
+
         # 更新完cookies后，更新.env文件
         self.update_env_cookies()
-        
+
     def update_env_cookies(self):
         """更新.env文件中的COOKIES_STR"""
         try:
             # 获取当前cookies的字符串形式
-            cookie_str = '; '.join([f"{cookie.name}={cookie.value}" for cookie in self.session.cookies])
+            cookie_str = '; '.join([f"{cookie.name}={cookie.value}" for cookie in self._iter_cookies()])
             
             # 读取.env文件
             env_path = os.path.join(os.getcwd(), '.env')
@@ -119,9 +151,9 @@ class XianyuApis:
                 'deviceId': self.session.cookies.get('cna', '')
             }
             
-            response = self.session.post(url, params=params, data=data)
+            response = self._post(url, params=params, data=data)
             res_json = response.json()
-            
+
             if res_json.get('content', {}).get('success'):
                 logger.debug("Login成功")
                 # 清理和更新cookies
@@ -152,7 +184,7 @@ class XianyuApis:
         params = {
             'jsv': '2.7.2',
             'appKey': '34839810',
-            't': str(int(time.time()) * 1000),
+            't': str(int(time.time() * 1000)),  # 毫秒精度：原int(time.time())*1000会截成整秒(.000结尾)，是非浏览器tell
             'sign': '',
             'v': '1.0',
             'type': 'originaljson',
@@ -169,30 +201,21 @@ class XianyuApis:
         data = {
             'data': data_val,
         }
+        # 只保留功能性头；UA/sec-ch-ua/sec-fetch 交给 impersonate 统一提供，避免指纹打架
         headers = {
-            "Host": "h5api.m.goofish.com",
-            "sec-ch-ua-platform": "\"Windows\"",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "accept": "application/json",
-            "sec-ch-ua": "\"Chromium\";v=\"146\", \"Not-A.Brand\";v=\"24\", \"Google Chrome\";v=\"146\"",
             "content-type": "application/x-www-form-urlencoded",
-            "sec-ch-ua-mobile": "?0",
             "origin": "https://www.goofish.com",
-            "sec-fetch-site": "same-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
             "referer": "https://www.goofish.com/",
-            "accept-language": "en,zh-CN;q=0.9,zh;q=0.8,zh-TW;q=0.7,ja;q=0.6",
-            "priority": "u=1, i"
         }
         # 简单获取token，信任cookies已清理干净
-        token = self.session.cookies.get('_m_h5_tk', '').split('_')[0]
-        
+        token = (self.session.cookies.get('_m_h5_tk') or '').split('_')[0]
+
         sign = generate_sign(params['t'], token, data_val)
         params['sign'] = sign
-        
+
         try:
-            response = self.session.post('https://h5api.m.goofish.com/h5/mtop.taobao.idlemessage.pc.login.token/1.0/', headers=headers, params=params, data=data)
+            response = self._post('https://h5api.m.goofish.com/h5/mtop.taobao.idlemessage.pc.login.token/1.0/', headers=headers, params=params, data=data)
             res_json = response.json()
             
             if isinstance(res_json, dict):
@@ -205,9 +228,16 @@ class XianyuApis:
                         logger.error(f"❌ 触发风控: {ret_value}")
                         logger.error("🔴 系统目前无法自动解决，请进入闲鱼网页版-点击消息-过滑块-复制最新的Cookie")
 
-                        # 无交互终端（如Docker后台运行）时无法手动输入，直接退出
+                        # 无交互终端（如Docker后台运行）时无法手动输入。
+                        # 关键：配合 restart:always 时，若立即 exit 会被秒拉起、每几秒再戳一次风控墙，
+                        # 反而让账号/IP 一直冷却不下来。先长冷却再退出，把重试间隔拉开，给账号恢复窗口。
                         if not sys.stdin.isatty():
-                            logger.error("🔴 当前无交互终端，请更新.env中的COOKIES_STR后重启程序")
+                            cooldown = int(os.getenv("RISK_COOLDOWN", "1800"))  # 撞风控后冷却秒数，默认30分钟
+                            logger.error(
+                                f"🔴 当前无交互终端。为避免重启风暴持续触发风控，先冷却 {cooldown}s 再退出；"
+                                f"请在此期间更新 .env 中的 COOKIES_STR（过滑块后复制完整cookie）"
+                            )
+                            time.sleep(cooldown)
                             sys.exit(1)
 
                         # 获取用户输入的新Cookie
@@ -271,7 +301,7 @@ class XianyuApis:
         params = {
             'jsv': '2.7.2',
             'appKey': '34839810',
-            't': str(int(time.time()) * 1000),
+            't': str(int(time.time() * 1000)),  # 毫秒精度，见 get_token 同处说明
             'sign': '',
             'v': '1.0',
             'type': 'originaljson',
@@ -289,15 +319,15 @@ class XianyuApis:
         }
         
         # 简单获取token，信任cookies已清理干净
-        token = self.session.cookies.get('_m_h5_tk', '').split('_')[0]
-        
+        token = (self.session.cookies.get('_m_h5_tk') or '').split('_')[0]
+
         sign = generate_sign(params['t'], token, data_val)
         params['sign'] = sign
-        
+
         try:
-            response = self.session.post(
-                'https://h5api.m.goofish.com/h5/mtop.taobao.idle.pc.detail/1.0/', 
-                params=params, 
+            response = self._post(
+                'https://h5api.m.goofish.com/h5/mtop.taobao.idle.pc.detail/1.0/',
+                params=params,
                 data=data
             )
             
