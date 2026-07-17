@@ -1,8 +1,12 @@
-# 基础镜像换成官方 Playwright(Python) 镜像：自带 Chromium + 全部系统依赖。
+# 基础镜像：官方 Playwright(Python) 镜像，自带 Chromium + 全部系统依赖。
 # 原因：纯 HTTP 重放拿不出浏览器风控 JS 的信号，容易被 mtop 判定为机器人(RGV587)；
 # 改用容器内真实 Chromium(无头) 去取 token，让页面自己那套 JS 产出可信信号。
-# 注意：Playwright 不支持 Alpine(musl)，故从 python:3.10-alpine 切到 Debian(jammy)。
-FROM mcr.microsoft.com/playwright/python:v1.47.0-jammy
+# 注意：Playwright 不支持 Alpine(musl)，故用 Debian(jammy)。
+#
+# 国内加速：默认走 DaoCloud 的 MCR 镜像代理拉取（微软 MCR 不受 docker registry-mirror 加速）。
+# 若该代理不可用/想用官方源：--build-arg BASE_IMAGE=mcr.microsoft.com/playwright/python:v1.47.0-jammy
+ARG BASE_IMAGE=mcr.m.daocloud.io/playwright/python:v1.47.0-jammy
+FROM ${BASE_IMAGE}
 
 LABEL maintainer="coderxiu<coderxiu@qq.com>"
 LABEL description="闲鱼AI客服机器人（浏览器取token版）"
