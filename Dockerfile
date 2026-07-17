@@ -16,8 +16,10 @@ ENV TZ=Asia/Shanghai \
 
 WORKDIR /app
 
-# 国内加速：pip 换清华源（可用 --build-arg PIP_INDEX_URL= 覆盖回官方源）
-ARG PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+# 国内加速：pip 换腾讯云源（公网通用）。可用 --build-arg PIP_INDEX_URL= 覆盖：
+#   - 腾讯云服务器内网构建更快：https://mirrors.tencentyun.com/pypi/simple
+#   - 回官方源：https://pypi.org/simple
+ARG PIP_INDEX_URL=https://mirrors.cloud.tencent.com/pypi/simple
 
 # 先装依赖（利用层缓存）
 COPY requirements.txt .
